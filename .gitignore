@@ -1,5 +1,6 @@
 #  Local .terraform directories
 **/.terraform/*
+**/.terraform.d/*
 
 # .tfstate files
 *.tfstate
@@ -7,3 +8,5 @@
 
 # .tfvars files
 *.tfvars
+
+.bash_history
