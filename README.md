@@ -26,13 +26,13 @@ AWS/EKS is `not free` like Google/GKE or Azure/AKS. You pay $0.20 per hour ($140
 
 ### Requirements:
 
-* AWS account
-* helm
-* kubectl
-* awscli (python package)
-* aws-iam-authenticator
-* terraform 0.12.X
+* [Helm](https://helm.sh/docs/using_helm/#installing-helm)
+* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+* [awscli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+* [aws-iam-authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
+* [Terraform 0.12.X](https://terraform.io/downloads.html) (also in `brew`)
 
+> Having issues installing the requirements? You can also run everything on `Docker` (check the last section)
 
 ### Steps
 
@@ -67,6 +67,19 @@ kubectl proxy
 open http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login
 ```
 
-### Docker image for CI
+### Docker installation
 
-Dockerfile based image python 3.7.X built on Debian 10 (buster) including all the dependencies to run the above commands.
+Base image is python:3.7-buster (Debian 10) including all the dependencies to run the above commands on CI or local machine.
+
+Local machine installation requires:
+
+* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+* [awscli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+
+```
+docker build -t launcher .
+
+docker run -it -p 8001:8001 -w /root -v $(pwd):/root -v $HOME/.kube:/root/.kube -v $HOME/.aws:/root/.aws launcher bash
+
+Step 2 > commands
+```
