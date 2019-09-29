@@ -50,3 +50,23 @@ resource "local_file" "aws_alb_controller_ingress" {
   filename = "config/aws-alb-ingress-controller.yml"
 }
 
+
+resource "local_file" "aws_alb_ingress_controller_rbac" {
+  content  = file("${path.module}/templates/aws-alb-ingress-controller-rbac.yml")
+  filename = "config/aws-alb-ingress-controller-rbac.yml"
+}
+
+resource "local_file" "eks_admin_service_account" {
+  content  = file("${path.module}/templates/eks-admin-service-account.yml")
+  filename = "config/eks-admin-service-account.yml"
+}
+
+resource "local_file" "ebs" {
+  content  = file("${path.module}/templates/ebs.yml")
+  filename = "config/ebs.yml"
+}
+
+resource "local_file" "tiller" {
+  content  = file("${path.module}/templates/tiller.yml")
+  filename = "config/tiller.yml"
+}
