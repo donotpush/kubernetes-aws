@@ -39,10 +39,7 @@ resource "local_file" "external_dns" {
 }
 
 data "template_file" "aws_alb_controller_ingress" {
-  template = file(
-    "${path.module}/kubectl_templates/aws-alb-ingress-controller.yml",
-  )
-
+  template = file("${path.module}/kubectl_templates/aws-alb-ingress-controller.yml")
   vars = {
     cluster_name = var.cluster_name
   }

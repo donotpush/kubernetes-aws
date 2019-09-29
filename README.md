@@ -64,7 +64,31 @@ AWS/EKS is `not free` like Google/GKE or Azure/AKS. You pay $0.20 per hour ($140
 
 ### Cluster creation
 
-1. Edit main.tf and provider.tf file with your own AWS infrastructure settings
+1. Set your AWS infrastructure config values, there are two options:
+```
+Option 1: Use this repository, just edit terraform.tfvars with your own settings, and jump to step 2.
+
+Option 2: Use another repository, and treat this repository as a terraform module. If choose this option do not forget about provider.tf. Module example:
+
+    module "cluster" {
+        source  = "git@github.com:donotpush/kubernetes-aws.git"
+        
+        cluster_name = "my-first-cluster"
+        vpc_id = "vpc-XXXX"
+        private_subnets = ["subnet-XXXX","subnet-XXXX","subnet-XXXX"]
+        public_subnets = ["subnet-XXXX","subnet-XXXX","subnet-XXXX"]
+        min_size = 1
+        max_size = 2
+        instance_type = "m4.large"
+        route53_zone_name = "example.io"
+        region = "eu-west-1"
+        tags = {
+            Environment = "dev"
+            Project = "K"
+            Team = "X"
+        }
+    }
+```
 
 2. Run the following commands:
 ```
@@ -109,5 +133,5 @@ docker build -t launcher .
 
 docker run -it -p 8001:8001 -w /root -v $(pwd):/root -v $HOME/.kube:/root/.kube -v $HOME/.aws:/root/.aws launcher bash
 
-Step 2 > commands
+Execute step 2 commands
 ```
