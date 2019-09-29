@@ -4,7 +4,7 @@
 resource "aws_security_group" "master" {
   name        = "${var.cluster_name}-master"
   description = "EKS master ${var.cluster_name}"
-  vpc_id      = "${var.vpc_id}"
+  vpc_id      = var.vpc_id
 
   egress {
     from_port   = 0
@@ -13,7 +13,12 @@ resource "aws_security_group" "master" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = "${merge(var.tags,map("Name", "${var.cluster_name}-master"))}"
+  tags = merge(
+    var.tags,
+    {
+      "Name" = "${var.cluster_name}-master"
+    },
+  )
 }
 
 resource "aws_security_group_rule" "ingress_node" {
@@ -22,8 +27,8 @@ resource "aws_security_group_rule" "ingress_node" {
   from_port                = 443
   to_port                  = 443
   protocol                 = "tcp"
-  security_group_id        = "${aws_security_group.master.id}"
-  source_security_group_id = "${aws_security_group.node.id}"
+  security_group_id        = aws_security_group.master.id
+  source_security_group_id = aws_security_group.node.id
 }
 
 ################################################################################
@@ -33,7 +38,7 @@ resource "aws_security_group_rule" "ingress_node" {
 resource "aws_security_group" "node" {
   name        = "${var.cluster_name}-node"
   description = "EKS node ${var.cluster_name}"
-  vpc_id      = "${var.vpc_id}"
+  vpc_id      = var.vpc_id
 
   egress {
     from_port   = 0
@@ -42,7 +47,13 @@ resource "aws_security_group" "node" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = "${merge(var.tags,map("Name", "${var.cluster_name}-node", "kubernetes.io/cluster/${var.cluster_name}", "owned"))}"
+  tags = merge(
+    var.tags,
+    {
+      "Name"                                      = "${var.cluster_name}-node"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    },
+  )
 }
 
 resource "aws_security_group_rule" "ingress_self" {
@@ -51,9 +62,9 @@ resource "aws_security_group_rule" "ingress_self" {
   from_port                = 0
   to_port                  = 65535
   protocol                 = "-1"
-  security_group_id        = "${aws_security_group.node.id}"
-  source_security_group_id = "${aws_security_group.node.id}"
-  depends_on               = ["aws_security_group.node"]
+  security_group_id        = aws_security_group.node.id
+  source_security_group_id = aws_security_group.node.id
+  depends_on               = [aws_security_group.node]
 }
 
 resource "aws_security_group_rule" "ingress_master" {
@@ -62,7 +73,11 @@ resource "aws_security_group_rule" "ingress_master" {
   from_port                = 1025
   to_port                  = 65535
   protocol                 = "tcp"
-  security_group_id        = "${aws_security_group.node.id}"
-  source_security_group_id = "${aws_security_group.master.id}"
-  depends_on               = ["aws_security_group.node", "aws_security_group.master"]
+  security_group_id        = aws_security_group.node.id
+  source_security_group_id = aws_security_group.master.id
+  depends_on = [
+    aws_security_group.node,
+    aws_security_group.master,
+  ]
 }
+

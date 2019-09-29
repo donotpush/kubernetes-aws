@@ -1,25 +1,33 @@
-variable "cluster_name" {}
+variable "cluster_name" {
+}
 
-variable "vpc_id" {}
+variable "vpc_id" {
+}
 
 variable "private_subnets" {
-  type = "list"
+  type = list(string)
 }
 
 variable "public_subnets" {
-  type = "list"
+  type = list(string)
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 }
 
-variable "max_size" {}
+variable "max_size" {
+}
 
-variable "min_size" {}
+variable "min_size" {
+}
 
-variable "instance_type" {}
+variable "instance_type" {
+}
 
-variable "route53_zone_name" {}
+variable "route53_zone_name" {
+}
 
-data "aws_region" "current" {}
+data "aws_region" "current" {
+}
+
