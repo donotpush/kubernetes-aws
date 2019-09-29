@@ -1,6 +1,6 @@
 # Generates kubernetes config that will be applied after terraform apply
 data "template_file" "aws_auth" {
-  template = file("${path.module}/kubectl_templates/aws-auth.yml")
+  template = file("${path.module}/templates/aws-auth.yml")
 
   vars = {
     role_arn_node = aws_iam_role.node.arn
@@ -13,11 +13,11 @@ resource "local_file" "aws_auth" {
 }
 
 data "template_file" "autoscaler" {
-  template = file("${path.module}/kubectl_templates/autoscaler.yml")
+  template = file("${path.module}/templates/autoscaler.yml")
 
   vars = {
     cluster_name = var.cluster_name
-    region       = data.aws_region.current.name
+    region       = var.region
   }
 }
 
@@ -27,7 +27,7 @@ resource "local_file" "autoscaler" {
 }
 
 data "template_file" "external_dns" {
-  template = file("${path.module}/kubectl_templates/external-dns.yml")
+  template = file("${path.module}/templates/external-dns.yml")
   vars = {
     route53_zone_name = var.route53_zone_name
   }
@@ -39,7 +39,7 @@ resource "local_file" "external_dns" {
 }
 
 data "template_file" "aws_alb_controller_ingress" {
-  template = file("${path.module}/kubectl_templates/aws-alb-ingress-controller.yml")
+  template = file("${path.module}/templates/aws-alb-ingress-controller.yml")
   vars = {
     cluster_name = var.cluster_name
   }

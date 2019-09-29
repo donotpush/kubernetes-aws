@@ -82,7 +82,7 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
 resource "aws_iam_role_policy" "aws_alb_ingress_controller" {
   name = "alb_ingress_controller"
   policy = file(
-    "${path.module}/iam_policies/aws_alb_ingress_controller.json",
+    "${path.module}/policies/aws_alb_ingress_controller.json",
   )
   role = aws_iam_role.node.id
 }
@@ -90,14 +90,14 @@ resource "aws_iam_role_policy" "aws_alb_ingress_controller" {
 # Docs: https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md
 resource "aws_iam_role_policy" "autoscaler" {
   name   = "autoscaler"
-  policy = file("${path.module}/iam_policies/autoscaler.json")
+  policy = file("${path.module}/policies/autoscaler.json")
   role   = aws_iam_role.node.id
 }
 
 # Docs: https://github.com/kubernetes-incubator/external-dns
 resource "aws_iam_role_policy" "external_dns" {
   name   = "external_dns"
-  policy = file("${path.module}/iam_policies/external_dns.json")
+  policy = file("${path.module}/policies/external_dns.json")
   role   = aws_iam_role.node.id
 }
 

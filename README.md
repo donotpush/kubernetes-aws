@@ -68,7 +68,7 @@ AWS/EKS is `not free` like Google/GKE or Azure/AKS. You pay $0.20 per hour ($140
 ```
 Option 1: Use this repository, just edit terraform.tfvars with your own settings, and jump to step 2.
 
-Option 2: Use another repository, and treat this repository as a terraform module. If choose this option do not forget about provider.tf. Module example:
+Option 2: Use another repository, and treat this repository as a terraform module.  Module example:
 
     module "cluster" {
         source  = "git@github.com:donotpush/kubernetes-aws.git"
