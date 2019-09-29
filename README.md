@@ -32,9 +32,34 @@ AWS/EKS is `not free` like Google/GKE or Azure/AKS. You pay $0.20 per hour ($140
 * [awscli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 * [aws-iam-authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
 * [Terraform 0.12.X](https://terraform.io/downloads.html) (also in `brew`)
-* AWS VPC with private and public subnets! 
+* AWS VPC with public and private subnets 
 
 > Having issues installing the requirements? You can also run everything on `Docker` (check the last section)
+
+### VPC tagging considerations
+
+- VPC tags:  
+    
+    | Key        | Value           | 
+    | ------------- |:-------------:| 
+    | kubernetes.io/cluster/<CLUSTER_NAME>    | shared | 
+
+
+- Private subnets tags:
+    
+    | Key        | Value           | 
+    | ------------- |:-------------:| 
+    | kubernetes.io/cluster/<CLUSTER_NAME>    | shared | 
+    | kubernetes.io/role/internal-elb    | 1 | 
+
+- Public subnets tags:
+    
+    | Key        | Value           | 
+    | ------------- |:-------------:| 
+    | kubernetes.io/cluster/<CLUSTER_NAME>    | shared | 
+    | kubernetes.io/role/elb        | 1 | 
+
+
 
 ### Steps
 
@@ -42,7 +67,7 @@ AWS/EKS is `not free` like Google/GKE or Azure/AKS. You pay $0.20 per hour ($140
 
 2. Run the following commands:
 ```
-# Custer creation
+# Cluster creation
 terraform init
 terraform plan
 terraform apply
