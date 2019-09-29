@@ -1,4 +1,5 @@
-# kubernetes-aws
+
+![img](https://miro.medium.com/max/763/1*lgt6E6bGC384R8MKGM3FXw.png )
 
 Fully automated EKS cluster creation including essential configuration to deploying your workloads!
 
@@ -15,7 +16,7 @@ Fully automated EKS cluster creation including essential configuration to deploy
 * [kubernetes/dashboard](https://github.com/kubernetes/dashboard)
 
 
-AWS EBS integration, AWS ALB integration, and AWS Route53 integration also added!
+AWS EBS, AWS ALB , and AWS Route53 integration also added!
 
 
 ## Pricing
@@ -31,6 +32,7 @@ AWS/EKS is `not free` like Google/GKE or Azure/AKS. You pay $0.20 per hour ($140
 * [awscli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 * [aws-iam-authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
 * [Terraform 0.12.X](https://terraform.io/downloads.html) (also in `brew`)
+* AWS VPC with private and public subnets! 
 
 > Having issues installing the requirements? You can also run everything on `Docker` (check the last section)
 
