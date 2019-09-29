@@ -117,6 +117,25 @@ kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | gre
 kubectl proxy
 
 open http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login
+
+# Deploy prometheus and grafana
+
+helm init --service-account tiller
+kubectl create namespace monitoring
+helm install --name prometheus stable/prometheus-operator --namespace monitoring
+
+# Prometheus UI
+
+kubectl port-forward -n monitoring  prometheus-prometheus-prometheus-oper-prometheus-0 9090:9090
+open http://localhost:9090/graph 
+
+# Grafana UI
+kubectl --namespace monitoring port-forward $(kubectl get pods --namespace monitoring -l "app=grafana,release=prometheus" -o jsonpath="{.items[0].metadata.name}") 3000
+
+open http://localhost:3000/login
+
+username: admin
+password: kubectl get secret --namespace monitoring prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
 
 ### Docker installation
