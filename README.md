@@ -1,68 +1,104 @@
 
 ![img](https://miro.medium.com/max/763/1*lgt6E6bGC384R8MKGM3FXw.png )
 
-Fully automated EKS cluster creation including essential configuration to deploying your workloads! 
+## Introduction 
 
-* [kubernetes/autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler)
+Fully automated EKS cluster creation including essential configuration to deploying your workloads! It will take you **less than 30 minutes** to complete this guide!
 
-* [Prometheus + grafana](https://github.com/helm/charts/tree/master/stable/prometheus-operator)
+The architecture components are basically:
 
-* [kubernetes-incubator/external-dns](https://github.com/kubernetes-incubator/external-dns)
+* Master node (EKS cluster) and Worker nodes (EC2 instances)
 
-* [kubernetes-sigs/aws-alb-ingress-controller](https://github.com/kubernetes-sigs/aws-alb-ingress-controller)
+* [kubernetes/autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler), integrates Kubernetes with EC2 ASG increasing/decreasing the worker fleet.
+
+* [Prometheus + grafana](https://github.com/helm/charts/tree/master/stable/prometheus-operator), monitoring, dashboard and alerting system.
+
+* [kubernetes/dashboard](https://github.com/kubernetes/dashboard), general purpose, web-based UI for Kubernetes clusters.
+
+* AWS add-ons to integrate services like IAM, Route53, EBS, and ALB(load balancer)
+    * [kubernetes-incubator/external-dns](https://github.com/kubernetes-incubator/external-dns)
+
+    * [kubernetes-sigs/aws-alb-ingress-controller](https://github.com/kubernetes-sigs/aws-alb-ingress-controller)
  
-* [kubernetes-sigs/aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator)
+    * [kubernetes-sigs/aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator)
 
-* [kubernetes/dashboard](https://github.com/kubernetes/dashboard)
-
-
-AWS EBS, AWS ALB , and AWS Route53 integration also added!
+* REST API deployment example
 
 
 ## Pricing
 
 AWS/EKS is `not free` like Google/GKE or Azure/AKS. You pay $0.20 per hour ($140 aprox per month) for the Kubernetes Control Plane, and usual EC2, EBS, and Load Balancing prices for resources that run in your account.
 
-# Installation 
+# Installation guide
 
-### Requirements:
+There are only three steps to get this done:
+
+1. Install requirements, tools used to deploy the solution! You can also use the docker image (check bellow)!
+
+2. Tag your AWS VPC and subnets
+
+3. Cluster creation/deployment
+
+### Step 1: requirements installation
+
+MacOS commands included, if you are using another OS just click on the links!
 
 * [Helm](https://helm.sh/docs/using_helm/#installing-helm)
+```
+brew install kubernetes-helm
+```
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+```
+brew install kubectl 
+```
 * [awscli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+```
+pip install awscli 
+```
+> Note: Checkout out the **pyenv** project if you have issues with `pip`
 * [aws-iam-authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
+```
+brew install aws-iam-authenticator
+```
 * [Terraform 0.12.X](https://terraform.io/downloads.html) (also in `brew`)
-* Route53 hosted zone
-* AWS VPC with public and private subnets 
+```
+brew install terraform
+```
+* Your own existing AWS infrastructure resources:
+    * Route53 hosted zone
+    * AWS VPC with public and private subnets 
+
 
 > Having issues installing the requirements? You can also run everything on `Docker` (check the last section)
 
-### VPC tagging considerations
+### Step 2: VPC tagging considerations
+
+You must choose your `cluster name` at this moment, and replace the CLUSTER_NAME!
 
 - VPC tags:  
     
     | Key        | Value           | 
     | ------------- |:-------------:| 
-    | kubernetes.io/cluster/<CLUSTER_NAME>    | shared | 
+    | kubernetes.io/cluster/`CLUSTER_NAME`    | shared | 
 
 
 - Private subnets tags:
     
     | Key        | Value           | 
     | ------------- |:-------------:| 
-    | kubernetes.io/cluster/<CLUSTER_NAME>    | shared | 
+    | kubernetes.io/cluster/`CLUSTER_NAME`    | shared | 
     | kubernetes.io/role/internal-elb    | 1 | 
 
 - Public subnets tags:
     
     | Key        | Value           | 
     | ------------- |:-------------:| 
-    | kubernetes.io/cluster/<CLUSTER_NAME>    | shared | 
+    | kubernetes.io/cluster/`CLUSTER_NAME`    | shared | 
     | kubernetes.io/role/elb        | 1 | 
 
 
 
-### Cluster creation
+### Step 3: cluster creation/deployment
 
 1. Set your AWS infrastructure config values, there are two options:
 ```
@@ -92,7 +128,7 @@ Option 2: Use another repository, and treat this repository as a terraform modul
 
 2. Run the following commands:
 ```
-# Cluster creation
+# Cluster creation/deployment
 terraform init
 terraform plan
 terraform apply
@@ -138,19 +174,43 @@ username: admin
 password: kubectl get secret --namespace monitoring prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
 
-### Docker installation
 
-Base image is python:3.7-buster (Debian 10) including all the dependencies to run the above commands on CI or local machine.
+### Deploy the application example 
 
-Local machine installation requires:
+```
+1. Modify the `domain name` on echoserver/echoserver.yml line 51
 
-* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-* [awscli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+2. Modify the `the ip` on echoserver/echoserver.yml line 48
+
+What's your IP? > curl https://ifconfig.io/
+
+2. Deploy it!
+
+kubectl apply -f ./echoserver
+
+kubectl get pods -n echoserver
+
+kubectl logs <pod-id> -f -n echoserver
+
+3. Test it! You probably should wait a minute!
+
+curl http://echoserver.example.io -I
+
+4. Delete it!
+
+kubectl delete -f ./echoserver
+```
+
+### Docker image for CI/CD
+
+Base image is python:3.7-buster (Debian 10) including all the dependencies to run the above commands on your CI/CD.
 
 ```
 docker build -t launcher .
-
-docker run -it -p 8001:8001 -w /root -v $(pwd):/root -v $HOME/.kube:/root/.kube -v $HOME/.aws:/root/.aws launcher bash
-
-Execute step 2 commands
 ```
+
+### Cluster IAM considerations
+
+if you are planning on using different IAM roles or users to access the cluster administration via kubectl. You will need to modify your `./config/aws-auth.yml` file!
+
+Check the AWS Docs: https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html
