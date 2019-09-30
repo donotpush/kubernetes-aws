@@ -133,9 +133,9 @@ terraform init
 terraform plan
 terraform apply
 
-# Update your kubectl config 
+# Update your kubectl config, replace CLUSTER_NAME
 
-aws eks --region eu-west-1 update-kubeconfig --name my-first-cluster
+aws eks --region eu-west-1 update-kubeconfig --name CLUSTER_NAME
 
 
 # Deploy kubectl config files generate by terraform 
