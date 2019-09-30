@@ -201,6 +201,8 @@ curl http://echoserver.example.io -I
 kubectl delete -f ./echoserver
 ```
 
+ If you want to configure your application Ingress/ALB with SSL and Firewall, check this documentation https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/ingress/annotation/
+
 ### Docker image for CI/CD
 
 Base image is python:3.7-buster (Debian 10) including all the dependencies to run the above commands on your CI/CD.
