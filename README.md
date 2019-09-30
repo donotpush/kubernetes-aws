@@ -179,7 +179,7 @@ password: kubectl get secret --namespace monitoring prometheus-grafana -o jsonpa
 ```
 
 
-### Deploy the application example 
+### [Optional] Deploy the application example 
 
 ```
 1. Modify the `domain name` on echoserver/echoserver.yml line 51
