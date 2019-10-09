@@ -126,46 +126,51 @@ Option 2: Use another repository, and treat this repository as a terraform modul
     }
 ```
 
-2. Run the following commands:
+2. EKS cluster creation using Terraform
+
 ```
 # Cluster creation/deployment
 terraform init
 terraform plan
 terraform apply
+```
 
-# Update your kubectl config, replace CLUSTER_NAME
+3. Update your local `kubectl` config (replace CLUSTER_NAME)
 
+```
 aws eks --region eu-west-1 update-kubeconfig --name CLUSTER_NAME
+```
 
 
-# Deploy kubectl config files generate by terraform 
+4. Deploy `kubernetes/autoscaler`, `kubernetes/dashboard`, `kubernetes-incubator/external-dns`, `kubernetes-sigs/aws-alb-ingress-controller`, `tiller`, etc...
 
+```
 ls config/
 kubectl apply -f ./config 
+```
 
+5. Deploy `kubernetes/dashboard` and open it!
 
-# Deploy dashboard and open it!
-
+```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
 
-# Get an access token and copy it
-
+# Generates token which will be used to login
 kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep eks-admin | awk '{print $1}') 
 
 kubectl proxy
 
 open http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login
 
-Use the token to login!
+```
 
-# Deploy prometheus and grafana
+6. Deploy `Prometheus` and `Grafana`
 
+```
 helm init --service-account tiller
 kubectl create namespace monitoring
 helm install --name prometheus stable/prometheus-operator --namespace monitoring
 
 # Prometheus UI
-
 kubectl port-forward -n monitoring  prometheus-prometheus-prometheus-oper-prometheus-0 9090:9090
 open http://localhost:9090/graph 
 
